@@ -60,9 +60,9 @@ abstract class EloquentRepository extends AbstractRepository {
      */
     public function update($id, array $attributes)
     {
-        return $this->item(
-            $this->find($id)->update($attributes)
-        );
+        if ( $this->getModel()->find($id)->update($attributes) ) {
+            return $this->find($id);
+        }
     }
 
     /**

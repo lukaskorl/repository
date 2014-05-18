@@ -1,0 +1,27 @@
+{
+    "name": "lukaskorl/repository",
+    "description": "Powerful implementation of the repository pattern for Laravel 4 with a simple API",
+    "type": "library",
+    "keywords": ["repository", "laravel"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lukas Korl",
+            "email": "hello@lukaskorl.com",
+            "homepage": "http://lukaskorl.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.1.*",
+        "league/fractal": "0.7.*",
+        "connorvg/laravel-transform": "1.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Lukaskorl\\Repository": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}

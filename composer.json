@@ -16,7 +16,8 @@
         "php": ">=5.4.0",
         "illuminate/support": "4.1.*",
         "league/fractal": "0.7.*",
-        "connorvg/laravel-transform": "1.*"
+        "connorvg/laravel-transform": "1.*",
+        "lukaskorl/restful": "dev-develop"
     },
     "autoload": {
         "psr-0": {

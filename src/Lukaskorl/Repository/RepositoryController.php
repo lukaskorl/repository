@@ -83,7 +83,7 @@ abstract class RepositoryController extends \BaseController {
     public function destroy($id)
     {
         // Delete the entity
-        $this->getRepository()->delete($id);
+        $this->getRepository()->destroy($id);
 
         // Respond restfully
         return Restful::deleted();

@@ -45,7 +45,7 @@ interface Repository
      * @param $ids array|integer
      * @return mixed
      */
-    public function delete($ids);
+    public function destroy($ids);
 
     /**
      * Find an entity by its primary key or throw an exception.

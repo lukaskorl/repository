@@ -5,6 +5,7 @@ use Lukaskorl\Repository\Exceptions\EntityNotFoundException;
 use Lukaskorl\Repository\Exceptions\ModelNotSpecifiedException;
 use Lukaskorl\Repository\Exceptions\InvalidRepositoryConfigurationException;
 use Exception;
+use Lukaskorl\Repository\Exceptions\UnableToCompleteException;
 
 abstract class EloquentRepository extends AbstractRepository {
 
@@ -67,7 +68,10 @@ abstract class EloquentRepository extends AbstractRepository {
      */
     public function create(array $attributes = array())
     {
-        return $this->item( $this->call( __FUNCTION__, func_get_args() ) );
+        // 1. Create the entity in the database
+        // 2. Re-fetch entity from database
+        // 3. Transform item
+        return $this->item( $this->findOrFail( $this->call( __FUNCTION__, func_get_args() )->getKey() ) );
     }
 
     /**
@@ -76,11 +80,15 @@ abstract class EloquentRepository extends AbstractRepository {
      * @param $id
      * @param array $attributes
      * @return mixed
-     * @throws EntityNotFoundException
+     * @throws EntityNotFoundException|UnableToCompleteException
      */
     public function update($id, array $attributes)
     {
-        return $this->item( $this->findOrFail($id)->update($attributes) );
+        if( $this->call( 'findOrFail', array( $id ) )->fill($attributes)->save() ) {
+            return $this->findOrFail($id);
+        }
+
+        throw new UnableToCompleteException;
     }
 
     /**
@@ -89,7 +97,7 @@ abstract class EloquentRepository extends AbstractRepository {
      * @param $ids
      * @return mixed|integer
      */
-    public function delete($ids)
+    public function destroy($ids)
     {
         return $this->call( __FUNCTION__, func_get_args() );
     }

@@ -1,8 +1,10 @@
 <?php namespace Lukaskorl\Repository;
 
 use App, Eloquent;
+use Lukaskorl\Repository\Exceptions\EntityNotFoundException;
 use Lukaskorl\Repository\Exceptions\ModelNotSpecifiedException;
 use Lukaskorl\Repository\Exceptions\InvalidRepositoryConfigurationException;
+use Exception;
 
 abstract class EloquentRepository extends AbstractRepository {
 
@@ -14,15 +16,36 @@ abstract class EloquentRepository extends AbstractRepository {
     protected $model = false;
 
     /**
+     * Set the class name of the Eloquent model
+     *
+     * @param $model string
+     * @return $this
+     */
+    public function setModel($model)
+    {
+        $this->model = $model;
+        return $this;
+    }
+
+    /**
+     * Get the class name of the model
+     *
+     * @return string
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
      * Retrieves a collection of all entities in this repository
      *
-     * @return mixed
+     * @param array $columns
+     * @return array
      */
-    public function all()
+    public function all($columns = array('*'))
     {
-        return $this->collection(
-            $this->getModel()->all()
-        );
+        return $this->collection( $this->call( __FUNCTION__, func_get_args() ) );
     }
 
     /**
@@ -31,11 +54,9 @@ abstract class EloquentRepository extends AbstractRepository {
      * @param $id
      * @return mixed
      */
-    public function find($id)
+    public function find($id, $columns = array('*'))
     {
-        return $this->item(
-            $this->getModel()->find($id)
-        );
+        return $this->item( $this->call( __FUNCTION__, func_get_args() ) );
     }
 
     /**
@@ -44,11 +65,9 @@ abstract class EloquentRepository extends AbstractRepository {
      * @param array $attributes
      * @return mixed
      */
-    public function create(array $attributes)
+    public function create(array $attributes = array())
     {
-        return $this->item(
-            $this->getModel()->create($attributes)
-        );
+        return $this->item( $this->call( __FUNCTION__, func_get_args() ) );
     }
 
     /**
@@ -57,43 +76,50 @@ abstract class EloquentRepository extends AbstractRepository {
      * @param $id
      * @param array $attributes
      * @return mixed
+     * @throws EntityNotFoundException
      */
     public function update($id, array $attributes)
     {
-        if ( $this->getModel()->find($id)->update($attributes) ) {
-            return $this->find($id);
-        }
+        return $this->item( $this->findOrFail($id)->update($attributes) );
     }
 
     /**
      * Remove an entity from this repository
      *
-     * @param $id
-     * @return mixed
+     * @param $ids
+     * @return mixed|integer
      */
-    public function delete($id)
+    public function delete($ids)
     {
-        return $this->getModel()->destroy($id);
+        return $this->call( __FUNCTION__, func_get_args() );
     }
 
     /**
-     * Return model used for this repository. Default a model based on the $modelClass member is created.
-     *
-     * @return Eloquent
+     * Find an entity by its primary key or throw an exception
+     * @param $id
+     * @param array $columns
+     * @return mixed
+     * @throws EntityNotFoundException
      */
-    public function getModel()
+    public function findOrFail($id, $columns = array('*'))
     {
-        // Check if configuration is complete
-        if ( ! $this->model ) throw new ModelNotSpecifiedException("Set classname of model in protected member variable \$modelClass of class ".get_class($this));
+        try {
+            return $this->item( $this->call( __FUNCTION__, func_get_args() ) );
+        } catch ( Exception $e ) {
+            throw new EntityNotFoundException($e->getMessage());
+        }
+    }
 
-        // Instantiate the model
-        $model = App::make($this->model);
-
-        // Check if model is valid
-        if ( ! $model instanceof Eloquent ) throw new InvalidRepositoryConfigurationException("Model for ".get_class($this)." must be subclass of \\Eloquent");
-
-        // Return model if checks are passed
-        return $model;
+    /**
+     * Call a method on the Eloquent model
+     *
+     * @param $method
+     * @param array $arguments
+     * @return mixed
+     */
+    protected function call($method, $arguments = array())
+    {
+        return call_user_func_array("{$this->model}::{$method}", $arguments);
     }
 
 }

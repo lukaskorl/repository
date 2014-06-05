@@ -1,10 +1,9 @@
 <?php namespace Lukaskorl\Repository;
 
-use App, Eloquent;
+use App, Eloquent, Exception;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 use Lukaskorl\Repository\Exceptions\EntityNotFoundException;
-use Lukaskorl\Repository\Exceptions\ModelNotSpecifiedException;
-use Lukaskorl\Repository\Exceptions\InvalidRepositoryConfigurationException;
-use Exception;
 use Lukaskorl\Repository\Exceptions\UnableToCompleteException;
 
 abstract class EloquentRepository extends AbstractRepository {
@@ -68,6 +67,9 @@ abstract class EloquentRepository extends AbstractRepository {
      */
     public function create(array $attributes = array())
     {
+        // Fire event before creating entity (i.e. validation will hook onto this event)
+        Event::fire('api.' . Str::camel(Str::singular($this->model)) . '.creating', [$attributes]);
+
         // 1. Create the entity in the database
         // 2. Re-fetch entity from database
         // 3. Transform item

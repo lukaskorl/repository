@@ -100,6 +100,13 @@ If you typhint the constructor with a repository implementation the Laravel IoC 
 
 By default the controller will respond in a *RESTful* way. For more information about the restful behavior checkout [RESTful on GitHub](https://github.com/lukaskorl/restful).
 
+## Hooks
+
+Repositories will fire various events on various actions. The name pattern for repository events is `repository.<DOMAIN>.<ACTION>` where `<DOMAIN>` is the plural name of the model used in the `EloquentRepository`. Currently there are these `<ACTION>`s triggered:
+
+ * `repository.<DOMAIN>.creating` is triggered **before** the model is persisted. If you want to register a validation service hook onto this event and throw an exception if validation fails.
+ * `repository.<DOMAIN>.created` is triggered **after** the model is persisted.
+
 ## License
 
 *Repository* is open-source software licensed under the [MIT license](http://opensource.org/licenses/MIT)

@@ -106,6 +106,8 @@ Repositories will fire various events on various actions. The name pattern for r
 
  * `repository.<DOMAIN>.creating` is triggered **before** the model is persisted. If you want to register a validation service hook onto this event and throw an exception if validation fails. If you extend the `Lukaskorl\Repository\RepositoryController` **create** will automatically intercept `Lukaskorl\Repository\Validation\ValidationException`s and return a restful *422* response.
  * `repository.<DOMAIN>.created` is triggered **after** the model is persisted.
+ 
+**Beware**: If your model is under a namespace (i.e. `Acme\Stuff\Something`) the `<DOMAIN>` of the event will be in object dot notation like: `repository.acme.stuff.something.<ACTION>`!
 
 ## License
 

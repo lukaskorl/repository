@@ -29,6 +29,9 @@ class RepositoryServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->app->register('Lukaskorl\Restful\RestfulServiceProvider');
+
+        // Register other service providers of dependencies
+        $this->app->register('ConnorVG\Transform\TransformServiceProvider');
 	}
 
 	/**

@@ -1,6 +1,7 @@
 <?php namespace Lukaskorl\Repository;
 
 use Input;
+use Lukaskorl\Repository\Validation\ValidationException;
 use Lukaskorl\Restful\Facades\Restful;
 
 abstract class RepositoryController extends \BaseController {

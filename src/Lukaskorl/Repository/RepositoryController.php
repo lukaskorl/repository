@@ -49,7 +49,12 @@ abstract class RepositoryController extends \BaseController {
      */
     public function store()
     {
-        return Restful::created($this->getRepository()->create(Input::all()));
+        try {
+            return Restful::created($this->getRepository()->create(Input::all()));
+        }
+        catch (ValidationException $exception) {
+            return Restful::validationFailed($exception->getErrors()->toArray());
+        }
     }
 
     /**

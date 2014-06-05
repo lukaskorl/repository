@@ -68,12 +68,16 @@ abstract class EloquentRepository extends AbstractRepository {
     public function create(array $attributes = array())
     {
         // Fire event before creating entity (i.e. validation will hook onto this event)
-        Event::fire('api.' . Str::camel(Str::singular($this->model)) . '.creating', [$attributes]);
+        Event::fire('repository.' . $this->getEventDomain() . '.creating', [$attributes]);
 
-        // 1. Create the entity in the database
-        // 2. Re-fetch entity from database
-        // 3. Transform item
-        return $this->item( $this->findOrFail( $this->call( __FUNCTION__, func_get_args() )->getKey() ) );
+        // Create the entity in the database
+        $createdId = $this->call( __FUNCTION__, func_get_args() )->getKey();
+
+        // Fire event after creating entity in DB
+        Event::fire('repository.' . $this->getEventDomain() . '.created', [$createdId]);
+
+        // Re-fetch entity from database and return
+        return $this->item( $this->findOrFail( $createdId ) );
     }
 
     /**
@@ -130,6 +134,15 @@ abstract class EloquentRepository extends AbstractRepository {
     protected function call($method, $arguments = array())
     {
         return call_user_func_array("{$this->model}::{$method}", $arguments);
+    }
+
+    /**
+     * Get the event domain. Name of the event is constructed like "repository.<DOMAIN>.<ACTION>"
+     * @return string
+     */
+    protected function getEventDomain()
+    {
+        return Str::camel(Str::plural($this->model));
     }
 
 }

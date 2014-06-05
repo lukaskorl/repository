@@ -102,7 +102,7 @@ By default the controller will respond in a *RESTful* way. For more information 
 
 ## Hooks
 
-Repositories will fire various events on various actions. The name pattern for repository events is `repository.<DOMAIN>.<ACTION>` where `<DOMAIN>` is the plural name of the model used in the `EloquentRepository`. Currently there are these `<ACTION>`s triggered:
+Repositories will fire various events on various actions. The name pattern for repository events is `repository.<DOMAIN>.<ACTION>` where `<DOMAIN>` is the name of the model used in the `EloquentRepository`. Currently there are these `<ACTION>`s triggered:
 
  * `repository.<DOMAIN>.creating` is triggered **before** the model is persisted. If you want to register a validation service hook onto this event and throw an exception if validation fails. If you extend the `Lukaskorl\Repository\RepositoryController` **create** will automatically intercept `Lukaskorl\Repository\Validation\ValidationException`s and return a restful *422* response.
  * `repository.<DOMAIN>.created` is triggered **after** the model is persisted.

@@ -142,7 +142,7 @@ abstract class EloquentRepository extends AbstractRepository {
      */
     protected function getEventDomain()
     {
-        return str_replace('\\', '.', Str::lower(Str::camel(Str::plural($this->model))));
+        return str_replace('\\', '.', Str::lower(trim( $this->model, '\\' )));
     }
 
 }

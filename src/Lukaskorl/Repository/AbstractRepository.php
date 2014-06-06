@@ -21,7 +21,7 @@ abstract class AbstractRepository implements Repository {
     protected function collection($collection)
     {
         // Check if transformer is configured
-        if ($this->transformer) {
+        if ($collection && $this->transformer) {
             $collection = App::make('League\Fractal\Manager')
                 ->createData(new Fractal\Resource\Collection($collection, $this->transformer))
                 ->toArray()['data'];
@@ -39,7 +39,7 @@ abstract class AbstractRepository implements Repository {
     protected function item($item)
     {
         // Check if transformer is configured
-        if ($this->transformer) {
+        if ($item && $this->transformer) {
             $item = App::make('League\Fractal\Manager')
                 ->createData(new Fractal\Resource\Item($item, $this->transformer))
                 ->toArray()['data'];

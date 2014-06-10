@@ -77,7 +77,7 @@ abstract class EloquentRepository extends AbstractRepository {
         Event::fire('repository.' . $this->getEventDomain() . '.created', [$createdId]);
 
         // Re-fetch entity from database and return
-        return $this->item( $this->findOrFail( $createdId ) );
+        return $this->findOrFail( $createdId );
     }
 
     /**

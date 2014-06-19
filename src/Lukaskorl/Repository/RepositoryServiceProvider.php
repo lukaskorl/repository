@@ -32,6 +32,7 @@ class RepositoryServiceProvider extends ServiceProvider {
 
         // Register other service providers of dependencies
         $this->app->register('ConnorVG\Transform\TransformServiceProvider');
+        $this->app->register('Jenssegers\Mongodb\MongodbServiceProvider');
 	}
 
 	/**

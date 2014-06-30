@@ -60,27 +60,6 @@ abstract class EloquentRepository extends AbstractRepository {
     }
 
     /**
-     * Create a new entity in this repository
-     *
-     * @param array $attributes
-     * @return mixed
-     */
-    public function create(array $attributes = array())
-    {
-        // Fire event before creating entity (i.e. validation will hook onto this event)
-        Event::fire('repository.' . $this->getEventDomain() . '.creating', [$attributes]);
-
-        // Create the entity in the database
-        $createdId = $this->call( __FUNCTION__, func_get_args() )->getKey();
-
-        // Fire event after creating entity in DB
-        Event::fire('repository.' . $this->getEventDomain() . '.created', [$createdId]);
-
-        // Re-fetch entity from database and return
-        return $this->findOrFail( $createdId );
-    }
-
-    /**
      * Update an entity in this repository
      *
      * @param $id
@@ -95,6 +74,43 @@ abstract class EloquentRepository extends AbstractRepository {
         }
 
         throw new UnableToCompleteException;
+    }
+
+    /**
+     * Create a new entity in this repository
+     *
+     * @param array $attributes
+     * @param array $forceAttributes
+     * @throws Exceptions\EntityNotFoundException
+     * @return mixed
+     */
+    public function create(array $attributes = array(), array $forceAttributes = array())
+    {
+        // Fire event before creating entity (i.e. validation will hook onto this event)
+        Event::fire('repository.' . $this->getEventDomain() . '.creating', [$attributes]);
+
+        // Create the entity in the database
+        $createdId = $this->call( __FUNCTION__, func_get_args() )->getKey();
+
+        // Force attributes onto the entity
+        if (count($forceAttributes) > 0) {
+            $modelclass = $this->model;
+            $model = $modelclass::findOrFail( $createdId );
+            foreach($forceAttributes as $key => $value) {
+                $model->$key = $value;
+
+                if ($key == $model->getKeyName()) {
+                    $createdId = $value;
+                }
+            }
+            $model->save();
+        }
+
+        // Fire event after creating entity in DB
+        Event::fire('repository.' . $this->getEventDomain() . '.created', [$createdId]);
+
+        // Re-fetch entity from database and return
+        return $this->findOrFail( $createdId );
     }
 
     /**

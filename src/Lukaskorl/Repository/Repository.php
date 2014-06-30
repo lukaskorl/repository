@@ -26,9 +26,10 @@ interface Repository
      * Create an entity with the given attributes. Return the newly created entity including the new primary key.
      *
      * @param array $attributes
+     * @param array $forceAttributes This attributes will be forced onto the entity (circumventing i.e. mass assignment)
      * @return array
      */
-    public function create(array $attributes = array());
+    public function create(array $attributes = array(), array $forceAttributes = array());
 
     /**
      * Update an existing entity identified by it's primary key. Returns the updated entity.
